@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar — pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<a class="skip" href="#board">Skip to the board</a>
+
+<header class="top">
+  <div class="brand"><span class="pulse" aria-hidden="true"></span> TOKEN RADAR</div>
+  <div class="top-meta"><span id="asof">Snapshot —</span><span class="model-tag" id="modeltag">model radar-2</span></div>
+</header>
+
+<main id="board">
+  <section class="hero">
+    <p class="kicker">Pre-token protocols · ranked by implied value</p>
+    <h1>Which protocol is worth farming next?</h1>
+    <p class="lede">Every protocol in the snapshot that records no token, ranked by what its token would be
+      worth if the record stayed as it is — TVL, seven-day growth and time run with no token.
+      Wrapped, staked and bridged products of tokens that already trade are left out: they are not
+      tokens that do not exist yet.</p>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <section class="spot" aria-label="Top five by implied value">
+    <h2>Top 5 by implied value</h2>
+    <div class="spot-grid" id="spotlight"></div>
+  </section>
+
+  <section class="controls" aria-label="Board controls">
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-tab="board" role="tab" aria-selected="true">Board</button>
+      <button class="tab" data-tab="watchlist" role="tab" aria-selected="false">Watchlist <span class="count" id="wlcount"></span></button>
+      <button class="tab" data-tab="live" role="tab" aria-selected="false">Live tokens <span class="count" id="livecount"></span></button>
+    </div>
+    <div class="filters">
+      <label class="search">Search <input id="q" type="search" placeholder="Name or slug…" autocomplete="off"></label>
+      <label>Chain <select id="chain"><option value="all">All chains</option></select></label>
+      <label>Category <select id="category"><option value="all">All categories</option></select></label>
+      <label>Sort <select id="sort">
+        <option value="implied">Implied value</option>
+        <option value="tvl">TVL</option>
+        <option value="growth">7-day change</option>
+        <option value="age">Age</option>
+        <option value="name">Name</option>
+      </select></label>
+      <label class="check"><input id="watchonly" type="checkbox"> Watchlist only</label>
+    </div>
+    <p class="resultline" id="resultline"></p>
+  </section>
+
+  <section class="tablewrap" aria-label="Ranked board">
+    <table class="board">
+      <thead><tr>
+        <th class="num">#</th><th>Protocol</th><th>Category</th><th>Chains</th>
+        <th class="num">TVL</th><th class="num">7d</th><th class="num">Age</th>
+        <th class="num">Implied value</th><th class="num">Score</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p class="empty" id="empty" hidden>No protocol matches these filters.</p>
+  </section>
+
+  <section class="sandbox" aria-label="Model sandbox">
+    <h2>Model sandbox — move the dials, watch the board move</h2>
+    <p class="sandbox-note">The board above recomputes live from the same formula. The defaults are the model's own constants.</p>
+    <div class="dials">
+      <label>Base multiple <span class="dialval" id="baseval">0.25</span>
+        <input id="base" type="range" min="0.05" max="0.5" step="0.01" value="0.25"></label>
+      <label>Growth weight <span class="dialval" id="growthval">0.50</span>
+        <input id="growth" type="range" min="0" max="1" step="0.05" value="0.5"></label>
+      <button id="reset" type="button">Reset to radar-2</button>
+    </div>
+    <p class="formula" id="formula"></p>
+  </section>
+
+  <section class="method" aria-label="How the model works">
+    <h2>How the model works</h2>
+    <ol class="method-list">
+      <li><strong>Base.</strong> TVL × 0.25 — a protocol's locked value is the anchor of what its token could be worth.</li>
+      <li><strong>Growth.</strong> The 7-day TVL change, clamped to −60%…+120%, moves the base by half its size.</li>
+      <li><strong>Maturity.</strong> Time listed with no token recorded, from 0.60 for a brand-new listing to 1.00 at three years.</li>
+      <li><strong>Breadth.</strong> More chains means wider distribution: 1 + 0.05 × ln(chains), capped at 1.15.</li>
+      <li><strong>Momentum.</strong> Growing faster than 25% in 7 days while under two years old earns a 1.05 boost.</li>
+    </ol>
+    <p class="caveat">Implied value is this radar's own estimate, not a price and not a prediction that a token
+      will be issued. “Records no token” means the snapshot's record carries no token — a protocol may
+      still have one its record does not show. Farm steps are how to use a protocol and position for a
+      possible future token; they never claim a confirmed airdrop, a date, or a price.</p>
+  </section>
+</main>
+
+<aside class="drawer" id="drawer" aria-label="Protocol detail" hidden>
+  <button class="drawer-close" id="drawerclose" type="button" aria-label="Close detail">×</button>
+  <div id="detail"></div>
+</aside>
+<div class="scrim" id="scrim" hidden></div>
+
+<footer class="foot">
+  <p id="source">Data: sealed snapshot of DefiLlama protocol data.</p>
+  <p>Token Radar · model radar-2 · every number comes from the snapshot or is labelled as the model's estimate.</p>
+</footer>
+
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
